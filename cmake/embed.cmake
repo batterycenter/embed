@@ -31,6 +31,7 @@ function(embed TARGET RESOURCE_FILE FILEMODE FULL_IDENTIFIER)
     STRING(REGEX REPLACE "/" "_" IDENTIFIER "${FULL_IDENTIFIER}")
     embed_validate_identifier("${IDENTIFIER}")
     get_filename_component(IDENTIFIER_FOLDERS_SLASH "${FULL_IDENTIFIER}" DIRECTORY) # Remove the filename of the identifier to get the parent folders
+    set(IDENTIFIER_FOLDERS_SLASH "${IDENTIFIER_FOLDERS_SLASH}/")
     STRING(REGEX REPLACE "/" ";" IDENTIFIER_NAMESPACES "${IDENTIFIER_FOLDERS_SLASH}")
     get_filename_component(FILE_IDENTIFIER "${FULL_IDENTIFIER}" NAME) # Remove the folders from the identifier to get just the identifier-filename
 
