@@ -6,7 +6,7 @@ Embedding files into executables made easy. Minimal CMake, Modern C++, a minute 
 
 This is a CMake-based C++ library that allows you to very easily embed resource files into your executable. It is meant to be used for files such as icons, images, shader code, configuration files, etc.. You don't have to worry about distributing them with your application as the files are part of the application once compiled. It might also be an advantage that an end user cannot modify the files once shipped. You can develop your application data in conventional files in your favourite text editor (your IDE) and don't have to deal with multi-line C++ strings or converting files using external tool. Conversion is fully automatic.
 
-This library is developed in the context of [Battery](https://github.com/batterycenter/battery). The feature set might make more sense in the bigger picture of Battery. However, it is designed to be used as a standalone library for any of your projects, that do not use Battery. Feel free to use it in any of your projects.
+This library is developed in the context of [Battery](https://github.com/batterycenter/battery). The feature set might make more sense in the bigger picture of Battery. However, it is designed to be used as a standalone library for any of your projects, that do not rely on Battery. Feel free to use it in any of your projects.
 
 ## What this is NOT
 
