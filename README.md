@@ -1,6 +1,6 @@
 # battery-embed
 
-Embedding files into executables made easy.
+Embedding files into executables made easy. Minimal CMake, Modern C++, a minute of setup time. What else?
 
 ## What this is
 
@@ -11,6 +11,25 @@ This library is developed in the context of [Battery](https://github.com/battery
 ## What this is NOT
 
 There exists another library at https://github.com/MKlimenko/embed, it is considered to be a reference implementation of [std::embed](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p1040r6.html). However, `std::embed` is still far away, so we have to improvise. `Battery-embed` has nothing to do with `std::embed` as it serves its own purpose, although it might deprecate when `std::embed` finally makes its way into the standard.
+
+## You can embed ...
+
+... files that are easier to write in a text editor in comparison to multi-line C-strings, or binary files, that would be a burden to ship with the portable application, that is:
+
+ - Text files such as
+   - text messages, ASCII art
+   - small configuration files such as default settings in json, XML, etc..
+   - templating files for generating files like jinja (or more like [inja]())
+   - shader code, base-64 encoded data that is too long for C++ strings
+ - Binary files such as
+   - images, icons or splash screens
+   - color palette files
+   - language/localization files
+   - audio files
+
+What is NOT to be embedded:  
+- Very large files (>50Mb), as this bloats the executable size and will take forever to compile. In some cases it might not even compile because the compiler needs too much RAM to compile the gigabytes of char-arrays. They are recommended to be shipped with the application and loaded at runtime.
+- Or files that are to be modified at runtime, by the end user or other applications.
 
 ## How it works
 
