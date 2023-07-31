@@ -1,0 +1,33 @@
+This example shows how files can be embedded at build-time using the Battery-Embed tool.
+The binary data is stored in the executable and can be easily accessed as a string.
+
+All of this text you are reading right now is not hard-coded, it was written in a txt file
+and then embedded into the executable using the battery_embed function in CMake.
+Any file type can be embedded as files are just byte arrays - The most common uses for such
+embedded files would be:
+
+    - Small configuration files (like Json or XML files)
+        or files used for templating (for example when generating files by replacing tokens)
+
+    - Long, multi-line strings that would be intimidating to write in code, such as
+        descriptive text (like the one you are reading),
+        GLSL/HLSL shader code or
+        base-64 encoded data
+
+    - Binary resources such as
+        icon files,
+        color palette files,
+        images/banners/background images,
+        language files or
+        small audio files
+
+What embedding is NOT to be used for:
+
+    - Embedding very large files (>50Mb), as this bloats the executable size 
+        and will take forever to compile. In some cases it might not even compile because
+        the compiler needs too much RAM, just to compile the gigabytes of C-array
+
+    - If very large resource files are used, it is recommended to ship the resource files 
+        with the executable and then load them from disk at runtime
+
+    - Or files that are to be modified at runtime, by the end user or other applications

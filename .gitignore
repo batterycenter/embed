@@ -1,0 +1,11 @@
+# IDE files
+.idea
+.vscode
+.vs
+
+# Build artifacts
+cmake-build-*/
+bin/
+build/
+build*/
+Testing/
