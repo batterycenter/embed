@@ -4,3 +4,24 @@
  / /_/ / /_/ / /_/ /_/  __/ /  / /_/ /_____/ /___/ / / / / / /_/ /  __/ /_/ /  
 /_____/\__,_/\__/\__/\___/_/   \__, /     /_____/_/ /_/ /_/_.___/\___/\__,_/   
                               /____/                                           
+
+If you are seeing this, everything is working!
+
+This message was not written in a dozen C-style comments
+or with a bunch of print statements, like you might think.
+
+This message was conveniently written in a file called "banner.txt",
+which was then embedded using the embed_text() CMake command and then
+compiled into the executable as a byte array. Thus, this file
+is now part of the executable and accessible as a simple 
+std::string and does not need to exist on disk anymore. The App
+can now be shipped without any resource files, that also cannot be
+modified by the end user once it is compiled. Any kind of resource file 
+can be embedded including binary resources such as images or icons.
+
+This is a great way to embed licenses, credits, configuration files,
+shader code, jinja templates, and other resources into your application,
+that are not to be modified by end users, while allowing you to nicely
+develop in a real file instead of writing multi-line string literals.
+
+Take a look at the other examples too!

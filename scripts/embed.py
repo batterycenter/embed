@@ -2,6 +2,10 @@ import jinja2
 import argparse
 import os
 import io
+import string
+
+def isPrintable(s):  # This is similar to str.isprintable(), but with \t, \n, and \r allowed
+    return all(c in string.printable for c in s)
 
 def main():
     parser = argparse.ArgumentParser(description='Embed a resource into a C++ source file.')
@@ -21,8 +25,11 @@ def main():
     is_binary = args.resource_type == "BINARY"
     original_resource = io.open(args.resource_file, 'rb' if is_binary else 'r').read()
     if not is_binary:
+        if not isPrintable(original_resource):
+            raise Exception(f"The file {args.resource_file} contains unprintable characters, but TEXT was specified as resource type. Are you sure you did not mean to write BINARY?")
         original_resource = original_resource.encode('utf-8')
-    resource_as_hex_array = ", ".join(["0x{:02x}".format(b) for b in original_resource])
+
+    resource_as_hex_array = ", ".join(["'\\x{:02x}'".format(b) for b in original_resource])
 
     if args.identifier_namespaces == "None":
         args.identifier_namespaces = ""

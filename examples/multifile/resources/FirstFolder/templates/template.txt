@@ -1,0 +1,5 @@
+{
+    "name": {{ project_name }},
+    "version": {{ version }},
+    "defaultFont": {{ font }}
+}

@@ -31,12 +31,20 @@ namespace EmbedInternal {
             return std::vector<uint8_t>(m_data.begin(), m_data.end());
         }
 
+        inline size_t length() const {
+            return m_data.length();
+        }
+
         inline size_t size() const {
             return m_data.size();
         }
 
         inline bool isBinary() const { 
             return m_isBinary; 
+        }
+
+        inline operator const char*() {
+            return data();
         }
 
         inline operator std::string() {

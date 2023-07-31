@@ -1,0 +1,5 @@
+Here is battery-embed. This example shows how to use multiple files with sub-folders.
+
+The text you are currently reading is a file called "message.txt", that was 
+compiled into the executable. I no longer need to exist on-disk and do not
+need to be shipped to end users as I am part of the application now.

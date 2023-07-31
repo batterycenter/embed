@@ -53,7 +53,6 @@ function(embed TARGET RESOURCE_FILE FILEMODE FULL_IDENTIFIER)
     endif()
 
     # The filepaths of the files to be generated
-    message("embed: Generating files for '${FULL_IDENTIFIER}'")
     set(OUTPUT_HEADER ${CMAKE_CURRENT_BINARY_DIR}/embedded_files/Embed/${IDENTIFIER_FOLDERS_SLASH}/${FILE_IDENTIFIER}.hpp)
     set(OUTPUT_SOURCE ${CMAKE_CURRENT_BINARY_DIR}/embedded_files/Embed/${IDENTIFIER_FOLDERS_SLASH}/${FILE_IDENTIFIER}.cpp)
 
@@ -90,4 +89,12 @@ function(embed TARGET RESOURCE_FILE FILEMODE FULL_IDENTIFIER)
     target_sources(${TARGET} PRIVATE "${OUTPUT_HEADER}" "${OUTPUT_SOURCE}")
     source_group(TREE ${CMAKE_CURRENT_BINARY_DIR}/embedded_files/Embed/ PREFIX "autogen" FILES "${OUTPUT_HEADER}" "${OUTPUT_SOURCE}")
     
+endfunction()
+
+function(embed_text TARGET RESOURCE_FILE FULL_IDENTIFIER)
+    embed(${TARGET} "${RESOURCE_FILE}" "TEXT" "${FULL_IDENTIFIER}")
+endfunction()
+
+function(embed_binary TARGET RESOURCE_FILE FULL_IDENTIFIER)
+    embed(${TARGET} "${RESOURCE_FILE}" "BINARY" "${FULL_IDENTIFIER}")
 endfunction()

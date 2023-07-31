@@ -1,0 +1,11 @@
+{
+    "name": "default-config",
+    "version": "1.0.0",
+    "description": "Default configuration for a project",
+    "colors": [
+        "#3F4C6B",
+        "#23A8F6",
+        "#67A972"
+    ],
+    "defaultFont": "Roboto"
+}
