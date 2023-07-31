@@ -19,43 +19,43 @@ namespace EmbedInternal {
     public:
         {{identifier}}_t() = default;
 
-        inline const std::string& str() const { 
+        const std::string& str() const { 
             return m_data; 
         }
         
-        inline const char* data() const { 
+        const char* data() const { 
             return m_data.data(); 
         }
 
-        inline std::vector<uint8_t> vec() const {
+        std::vector<uint8_t> vec() const {
             return std::vector<uint8_t>(m_data.begin(), m_data.end());
         }
 
-        inline size_t length() const {
+        size_t length() const {
             return m_data.length();
         }
 
-        inline size_t size() const {
+        size_t size() const {
             return m_data.size();
         }
 
-        inline bool isBinary() const { 
+        bool isBinary() const { 
             return m_isBinary; 
         }
 
-        inline operator const char*() {
+        operator const char*() {
             return data();
         }
 
-        inline operator std::string() {
+        operator std::string() {
             return str();
         }
 
-        inline operator std::vector<uint8_t>() {
+        operator std::vector<uint8_t>() {
             return vec();
         }
 {% for string_class in additional_string_classes %}
-        inline operator {{ string_class }}() {
+        operator {{ string_class }}() {
             return {{ string_class }}(str());
         }
 {% endfor %}
@@ -63,7 +63,7 @@ namespace EmbedInternal {
         {{ operator }}
 {% endfor %}
 #ifndef B_PRODUCTION_MODE
-        inline std::string original_filepath() const { return m_filepath; }
+        std::string original_filepath() const { return m_filepath; }
 #endif
 
     private:
@@ -74,12 +74,15 @@ namespace EmbedInternal {
         static const std::string m_filepath;
 #endif
     };
-    inline std::ostream& operator<<(std::ostream& os, const {{identifier}}_t& data) { os << data.str(); return os; }
 
 } // namespace EmbedInternal
 
-namespace Embed{{identifier_namespaces}} {
-    inline EmbedInternal::{{identifier}}_t {{file_identifier}};
-}
+std::ostream& operator<<(std::ostream& os, const EmbedInternal::{{identifier}}_t& data);
+
+namespace Embed {
+{% for ns in identifier_namespaces %}namespace {{ ns }} { 
+{% endfor %}    extern EmbedInternal::{{identifier}}_t {{file_identifier}};
+{% for ns in identifier_namespaces %}} 
+{% endfor %}}
 
 #endif // __embed_{{identifier}}_

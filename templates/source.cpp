@@ -19,3 +19,14 @@ namespace EmbedInternal {
 #endif
 
 } // namespace EmbedInternal
+
+std::ostream& operator<<(std::ostream& os, const EmbedInternal::{{identifier}}_t& data) { 
+    os << data.str(); 
+    return os; 
+}
+
+namespace Embed {
+{% for ns in identifier_namespaces %}namespace {{ ns }} { 
+{% endfor %}    EmbedInternal::{{identifier}}_t {{file_identifier}};
+{% for ns in identifier_namespaces %}} 
+{% endfor %}}

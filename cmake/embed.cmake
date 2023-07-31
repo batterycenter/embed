@@ -31,13 +31,8 @@ function(embed TARGET RESOURCE_FILE FILEMODE FULL_IDENTIFIER)
     STRING(REGEX REPLACE "/" "_" IDENTIFIER "${FULL_IDENTIFIER}")
     embed_validate_identifier("${IDENTIFIER}")
     get_filename_component(IDENTIFIER_FOLDERS_SLASH "${FULL_IDENTIFIER}" DIRECTORY) # Remove the filename of the identifier to get the parent folders
-    STRING(REGEX REPLACE "/" "::" IDENTIFIER_FOLDERS "${IDENTIFIER_FOLDERS_SLASH}")
+    STRING(REGEX REPLACE "/" ";" IDENTIFIER_NAMESPACES "${IDENTIFIER_FOLDERS_SLASH}")
     get_filename_component(FILE_IDENTIFIER "${FULL_IDENTIFIER}" NAME) # Remove the folders from the identifier to get just the identifier-filename
-    if (NOT IDENTIFIER STREQUAL FULL_IDENTIFIER)
-        set(IDENTIFIER_NAMESPACES "::${IDENTIFIER_FOLDERS}")
-    else()
-        set(IDENTIFIER_NAMESPACES "None")
-    endif()
 
     # If identifier already in use
     list(FIND _EMBED_USED_IDENTIFIERS ${IDENTIFIER} EMBED_USED_IDENTIFIERS_INDEX)
@@ -67,7 +62,7 @@ function(embed TARGET RESOURCE_FILE FILEMODE FULL_IDENTIFIER)
         "${IDENTIFIER}"
         "${FULL_IDENTIFIER}"
         "${FILE_IDENTIFIER}"
-        "${IDENTIFIER_NAMESPACES}"
+        --identifier-namespaces "${IDENTIFIER_NAMESPACES}"
         --additional-header-files "${EMBED_ADDITIONAL_HEADER_FILES}"
         --additional-string-classes "${EMBED_ADDITIONAL_STRING_CLASSES}"
         --additional-operators "${EMBED_ADDITIONAL_OPERATORS}"

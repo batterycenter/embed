@@ -16,7 +16,7 @@ def main():
     parser.add_argument('identifier', metavar='identifier', type=str, help='identifier to use for the resource')
     parser.add_argument('full_identifier', metavar='full_identifier', type=str, help='identifier including / to use for the resource')
     parser.add_argument('file_identifier', metavar='file_identifier', type=str, help='file identifier without folders to use for the resource')
-    parser.add_argument('identifier_namespaces', metavar='identifier_namespaces', type=str, help='just the identifier namespaces with leading :: if any')
+    parser.add_argument('--identifier-namespaces', metavar='identifier_namespaces', type=str, nargs='*', help='the identifier namespaces if any')
     parser.add_argument('--additional-header-files', dest='additional_header_files', type=str, nargs='*', help='additional header files to include')
     parser.add_argument('--additional-string-classes', dest='additional_string_classes', type=str, nargs='*', help='additional string classes to generate operators for')
     parser.add_argument('--additional-operators', dest='additional_operators', type=str, nargs='*', help='additional operators or member functions to generate')
@@ -30,9 +30,6 @@ def main():
         original_resource = original_resource.encode('utf-8')
 
     resource_as_hex_array = ", ".join(["'\\x{:02x}'".format(b) for b in original_resource])
-
-    if args.identifier_namespaces == "None":
-        args.identifier_namespaces = ""
 
     data = {
         "identifier": args.identifier,

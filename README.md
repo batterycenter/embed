@@ -34,7 +34,7 @@ What is NOT to be embedded:
 ## Requirements
 
  - CMake >=3.21
- - A C++17 compiler
+ - A C++14 compiler
 
 ## How it works
 
@@ -272,8 +272,8 @@ If you want to do something more advanced, you can also inject an entire operato
 
 ```cmake
 set(EMBED_ADDITIONAL_OPERATORS 
-  "inline operator MyString1() { return MyString1(m_data)\; }"
-  "inline operator MyString2() { return MyString2(m_data)\; }"
+  "operator MyString1() { return MyString1(m_data)\; }"
+  "operator MyString2() { return MyString2(m_data)\; }"
 )
 ```
 
