@@ -31,13 +31,13 @@ jobs:
 
     - name: Test Example simple
       working-directory: ${{github.workspace}}/build
-      run: ./simple
+      run: ./examples/simple/simple
 
     - name: Test Example multifile
       working-directory: ${{github.workspace}}/build
-      run: ./multifile
+      run: ./examples/multifile/multifile
 
     - name: Test Example binaryfile
       working-directory: ${{github.workspace}}/build
-      run: ./binaryfile
+      run: ./examples/binaryfile/binaryfile
 
