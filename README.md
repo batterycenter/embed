@@ -229,6 +229,8 @@ std::cout << Embed::Many::More::Folders::File1;
 std::cout << Embed::Many::More::Folders::Test2.isBinary();
 ```
 
+Every CMake call must have a unique namespace/identifier combination. The same identifier is allowed under different namespaces, but every namespace/identifier combination must be unique across the entire solution.
+
 ## Custom types and operators
 
 This feature makes sense in the bigger picture of [Battery](https://github.com/batterycenter/battery), but it also might for you. This library allows you to inject code that is placed into the generated header files, to allow automatic conversion operators to your custom string classes, or simply add more functions.
