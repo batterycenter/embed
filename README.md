@@ -1,6 +1,8 @@
 # battery-embed
+![](https://github.com/batterycenter/embed/actions/workflows/examples.yml/badge.svg)
 
 Embedding files into executables made easy. Minimal CMake, Modern C++, a minute of setup time. What else?
+
 
 ## What this is
 
