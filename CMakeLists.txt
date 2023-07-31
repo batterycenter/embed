@@ -4,6 +4,12 @@ project(embed)
 # Options
 option(BUILD_EXAMPLES "Build examples" ${PROJECT_IS_TOP_LEVEL})
 option(BUILD_TESTS "Build tests" ${PROJECT_IS_TOP_LEVEL})
+# set EMBED_ADDITIONAL_HEADER_FILES (list): Additional header files to be included in generated files (just the name + extension). 
+#    Example: "iostream;myString.h"
+# set EMBED_ADDITIONAL_STRING_CLASSES (list): Additional string classes to generate operators for (operators are automatically generated)
+#    Example: "std::string;my::string"
+# set EMBED_ADDITIONAL_OPERATORS (list): Additional member functions or operators for converting to custom types. 
+#    Example: "inline operator MyString1() { return MyString1(m_data)\; };inline operator MyString2() { return MyString2(m_data)\; }"
 
 # Define the actual embedding tool
 include(cmake/embed.cmake)

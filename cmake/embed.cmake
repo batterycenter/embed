@@ -1,4 +1,5 @@
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set(EMBED_USED_IDENTIFIERS "" CACHE INTERNAL "list of all identifiers used by the embed library")
 
 # Remember the source directory of this library
 get_filename_component(EMBED_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}" DIRECTORY)
@@ -22,21 +23,71 @@ function(embed_validate_identifier IDENTIFIER)  # Validate the identifier agains
     endif()
 endfunction()
 
-function(embed TARGET FILEPATH FILEMODE IDENTIFIER)
-    get_filename_component(FILEPATH "${FILEPATH}" ABSOLUTE) # Make the file path absolute
+function(embed TARGET RESOURCE_FILE FILEMODE FULL_IDENTIFIER)
+    get_filename_component(RESOURCE_FILE "${RESOURCE_FILE}" ABSOLUTE) # Make the file path absolute
+    get_filename_component(RESOURCE_FOLDER "${RESOURCE_FILE}" DIRECTORY)  # Get the resource file's parent directory
+
+    STRING(REGEX REPLACE "/" "_" IDENTIFIER "${FULL_IDENTIFIER}")
     embed_validate_identifier("${IDENTIFIER}")
+    get_filename_component(IDENTIFIER_FOLDERS_SLASH "${FULL_IDENTIFIER}" DIRECTORY) # Remove the filename of the identifier to get the parent folders
+    STRING(REGEX REPLACE "/" "::" IDENTIFIER_FOLDERS "${IDENTIFIER_FOLDERS_SLASH}")
+    get_filename_component(FILE_IDENTIFIER "${FULL_IDENTIFIER}" NAME) # Remove the folders from the identifier to get just the identifier-filename
+    if (NOT IDENTIFIER STREQUAL FULL_IDENTIFIER)
+        set(IDENTIFIER_NAMESPACES "::${IDENTIFIER_FOLDERS}")
+    else()
+        set(IDENTIFIER_NAMESPACES "None")
+    endif()
 
-    target_sources(${TARGET} PUBLIC ${FILEPATH})
-    source_group("resources" FILES ${FILEPATH})
+    # If identifier already in use
+    list(FIND EMBED_USED_IDENTIFIERS ${IDENTIFIER} EMBED_USED_IDENTIFIERS_INDEX)
+    if (NOT EMBED_USED_IDENTIFIERS_INDEX EQUAL -1)
+        message(FATAL_ERROR "embed: Identifier already in use: '${IDENTIFIER}'")
+    endif()
+    set(EMBED_USED_IDENTIFIERS ${EMBED_USED_IDENTIFIERS} ${IDENTIFIER} CACHE INTERNAL "list of all identifiers used by the embed library")
 
-    execute_process(COMMAND 
-        "${Python3_EXECUTABLE}" 
-        "${EMBED_SOURCE_DIR}/scripts/embed.py" 
-        "${FILEPATH}" 
-        "${FILEMODE}" 
-        "${IDENTIFIER}" 
-        # OUTPUT_VARIABLE EMBEDDED_FILE
-        OUTPUT_STRIP_TRAILING_WHITESPACE
+    target_sources(${TARGET} PUBLIC ${RESOURCE_FILE})
+    source_group(TREE "${RESOURCE_FOLDER}" PREFIX "resources/${IDENTIFIER_FOLDERS_SLASH}" FILES ${RESOURCE_FILE})
+
+    if (NOT FILEMODE STREQUAL "BINARY" AND NOT FILEMODE STREQUAL "TEXT")
+        message(FATAL_ERROR "embed: Invalid file mode: '${FILEMODE}'. Valid modes are 'BINARY' and 'TEXT'")
+    endif()
+
+    # The filepaths of the files to be generated
+    message("embed: Generating files for '${FULL_IDENTIFIER}'")
+    set(OUTPUT_HEADER ${CMAKE_CURRENT_BINARY_DIR}/embedded_files/Embed/${IDENTIFIER_FOLDERS_SLASH}/${FILE_IDENTIFIER}.hpp)
+    set(OUTPUT_SOURCE ${CMAKE_CURRENT_BINARY_DIR}/embedded_files/Embed/${IDENTIFIER_FOLDERS_SLASH}/${FILE_IDENTIFIER}.cpp)
+
+    set(EMBED_PY_SCRIPT "${EMBED_SOURCE_DIR}/scripts/embed.py")
+    set(EMBED_COMMAND "${Python3_EXECUTABLE}"
+        "${EMBED_PY_SCRIPT}"
+        "${OUTPUT_HEADER}"
+        "${OUTPUT_SOURCE}"
+        "${RESOURCE_FILE}"
+        "${FILEMODE}"
+        "${IDENTIFIER}"
+        "${FULL_IDENTIFIER}"
+        "${FILE_IDENTIFIER}"
+        "${IDENTIFIER_NAMESPACES}"
+        --additional-header-files "${EMBED_ADDITIONAL_HEADER_FILES}"
+        --additional-string-classes "${EMBED_ADDITIONAL_STRING_CLASSES}"
+        --additional-operators "${EMBED_ADDITIONAL_OPERATORS}"
     )
+
+    # This action generates both files and is called on-demand whenever the resource file changes
+    add_custom_command(
+        COMMAND ${EMBED_COMMAND}
+        DEPENDS "${RESOURCE_FILE}" 
+            "${EMBED_SOURCE_DIR}/templates/header.hpp" 
+            "${EMBED_SOURCE_DIR}/templates/source.cpp" 
+            "${EMBED_SOURCE_DIR}/cmake/embed.cmake" 
+            "${EMBED_PY_SCRIPT}"
+        OUTPUT "${OUTPUT_HEADER}" "${OUTPUT_SOURCE}"
+        WORKING_DIRECTORY ${EMBED_SOURCE_DIR}
+    )
+
+    # Add the generated files to the target
+    target_include_directories(${TARGET} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/embedded_files")
+    target_sources(${TARGET} PRIVATE "${OUTPUT_HEADER}" "${OUTPUT_SOURCE}")
+    source_group(TREE ${CMAKE_CURRENT_BINARY_DIR}/embedded_files/Embed/ PREFIX "autogen" FILES "${OUTPUT_HEADER}" "${OUTPUT_SOURCE}")
     
 endfunction()

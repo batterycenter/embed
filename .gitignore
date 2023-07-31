@@ -9,3 +9,6 @@ bin/
 build/
 build*/
 Testing/
+
+# Python cache
+__pycache__/
