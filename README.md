@@ -74,6 +74,7 @@ There are three ways to get the library:
 ### 1. Use [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html) or [CPM.cmake](https://github.com/cpm-cmake/CPM.cmake.git) to let CMake download it on-demand (Recommended)
 
 ```cmake
+include(FetchContent)
 FetchContent_Declare(
   battery-embed
   GIT_REPOSITORY https://github.com/batterycenter/embed.git
