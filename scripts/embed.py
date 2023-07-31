@@ -47,9 +47,11 @@ def main():
     }
 
     template = jinja2.Template(io.open("templates/header.hpp", 'r').read())
+    os.makedirs(os.path.dirname(args.header_target_file), exist_ok=True)
     open(args.header_target_file, 'w').write(template.render(data))
 
     template = jinja2.Template(io.open("templates/source.cpp", 'r').read())
+    os.makedirs(os.path.dirname(args.source_target_file), exist_ok=True)
     open(args.source_target_file, 'w').write(template.render(data))
 
 if __name__ == "__main__":
