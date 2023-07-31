@@ -19,11 +19,6 @@ if (BUILD_EXAMPLES)
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT simple)
 endif()
 
-# Build all tests
-if (BUILD_TESTS)
-    add_subdirectory(tests)
-endif()
-
 if (PROJECT_IS_TOP_LEVEL)
     set(PREDEFINED_TARGETS_FOLDER "CMakePredefinedTargets")
 endif()
