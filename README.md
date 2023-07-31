@@ -31,6 +31,11 @@ What is NOT to be embedded:
 - Very large files (>50Mb), as this bloats the executable size and will take forever to compile. In some cases it might not even compile because the compiler needs too much RAM to compile the gigabytes of char-arrays. They are recommended to be shipped with the application and loaded at runtime.
 - Or files that are to be modified at runtime, by the end user or other applications.
 
+## Requirements
+
+ - CMake >=3.21
+ - A C++17 compiler
+
 ## How it works
 
 `Battery-embed` uses Python to generate the files. You can use `embed_text()` and `embed_binary()` in CMake to mark files for embedding. Then, when building your project, the files are automatically converted to C++ byte arrays and added to your project. Also, it automatically regenerates whenever the file changes. Then, the source is compiled and linked into your application and you can access it like if it was a simple string, but without the hassle of writing dozens of multi-line C++ strings.
