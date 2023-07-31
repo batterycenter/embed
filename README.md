@@ -108,6 +108,46 @@ add_subdirectory(external/embed)
 
 This library does not have Conan support yet. Let me know if there is interest to add this library to Conan!
 
+## Full Example
+
+CMakeLists.txt
+```cmake
+cmake_minimum_required(VERSION 3.21)
+project(Test)
+
+include(FetchContent)
+FetchContent_Declare(
+  battery-embed
+  GIT_REPOSITORY https://github.com/batterycenter/embed.git
+  GIT_TAG        v1.0.0
+)
+FetchContent_MakeAvailable(battery-embed)
+
+add_executable(Test src/main.cpp)
+
+embed_text(Test resources/message.txt Message)
+```
+
+src/main.cpp
+```cpp
+
+#include <iostream>
+#include "Embed/Message.hpp"
+
+int main() {
+    std::cout << Embed::Message << std::endl;
+    return 0;
+}
+```
+
+resources/message.txt
+```
+Hello World! This is a very long text!
+It even has multiple lines!
+```
+
+That's it, just build and run it as usual!
+
 ## CMake API (Binary files and Line endings)
 
 Three functions exist for you. These are the main two:
