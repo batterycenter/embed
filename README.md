@@ -19,7 +19,7 @@ There exists another library at https://github.com/MKlimenko/embed, it is consid
  - Text files such as
    - text messages, ASCII art
    - small configuration files such as default settings in json, XML, etc..
-   - templating files for generating files like jinja (or more like [inja]())
+   - templating files for generating files like jinja (or more like [inja](https://github.com/pantor/inja))
    - shader code, base-64 encoded data that is too long for C++ strings
  - Binary files such as
    - images, icons or splash screens
