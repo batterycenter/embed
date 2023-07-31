@@ -3,7 +3,6 @@ project(embed)
 
 # Options
 option(BUILD_EXAMPLES "Build examples" ${PROJECT_IS_TOP_LEVEL})
-option(BUILD_TESTS "Build tests" ${PROJECT_IS_TOP_LEVEL})
 # set EMBED_ADDITIONAL_HEADER_FILES (list): Additional header files to be included in generated files (just the name + extension). 
 #    Example: "iostream;myString.h"
 # set EMBED_ADDITIONAL_STRING_CLASSES (list): Additional string classes to generate operators for (operators are automatically generated)
