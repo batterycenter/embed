@@ -58,7 +58,7 @@ namespace b {
         class embedded_file {
         public:
             constexpr embedded_file() = default;
-            constexpr embedded_file(const std::string_view& data, const std::string& filename)
+            constexpr embedded_file(const std::string_view& data, const std::string_view& filename)
                 : m_data(data), m_filename(filename) {};
 
             std::string str() const {
