@@ -1,8 +1,8 @@
 
 #include <iostream>
-#include "Embed/Banner.hpp"
+#include "battery/embed.hpp"
 
 int main() {
-    std::cout << "This is: \n" << Embed::Banner << std::endl;
+    std::cout << "This is: \n" << b::embed<"resources/banner.txt">() << std::endl;
     return 0;
 }
