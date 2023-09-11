@@ -47,6 +47,10 @@ set(EMBED_HEADER_FILE [=[
 #include <stdexcept>
 #include <sstream>
 
+#ifndef __cpp_constexpr_dynamic_alloc
+#   error "battery::embed requires C++20"
+#endif
+
 namespace b {
 
     struct embed_internal {
