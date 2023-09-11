@@ -95,7 +95,7 @@ This means, you are responsible for storing all your files on disk with LF line 
 even on Windows. For an explanation, consult http://utf8everywhere.org/.
 
 You might want to configure your Git client to always
-[checkout files with LF line endings](https://docs.github.com/en/get-started/getting-started-with-git/configuring-git-to-handle-line-endings).
+[checkout files with LF line endings](https://stackoverflow.com/questions/2517190/how-do-i-force-git-to-use-lf-instead-of-crlf-under-windows).
 
 # Building the Examples
 
