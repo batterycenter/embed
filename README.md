@@ -12,7 +12,7 @@ This library is developed in the context of [Battery](https://github.com/battery
 
 ## What this is NOT
 
-There exists another library at https://github.com/MKlimenko/embed, it is considered to be a reference implementation of [std::embed](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p1040r6.html). However, `std::embed` is still far away, so we have to improvise. `Battery-embed` has nothing to do with `std::embed` as it serves its own purpose, although it might deprecate when `std::embed` finally makes its way into the standard.
+This is not a 1-to-1 replacement or reference implementation of [std::embed](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p1040r6.html). `Battery-embed` serves its own purpose. The main goal is to implement a `std::embed` replacement until it finally makes its way into the standard, but this project might even be useful when `std::embed` is available due to the object-based access to the resources, vs. having a simple char-array of bytes using `std::embed` or `#embed`.
 
 ## You can embed ...
 
@@ -42,13 +42,16 @@ What is NOT to be embedded:
 
 `Battery-embed` uses Python to generate the files. You can use `embed_text()` and `embed_binary()` in CMake to mark files for embedding. Then, when building your project, the files are automatically converted to C++ byte arrays and added to your project. Also, it automatically regenerates whenever the file changes. Then, the source is compiled and linked into your application and you can access it like if it was a simple string, but without the hassle of writing dozens of multi-line C++ strings.
 
-`MKlimenko/embed` has a different approach, it builds a C++ CLI app and compiles it as part of your application, and then calls it to generate the files, doing the conversion in C++. `Battery-embed` also used this approach in the beginning, but this makes cross-compilation almost impossible, as the compiler might be for a different architecture and cannot run on the host, and having two different compilers in the same CMake project is just asking for trouble. 
+https://github.com/vector-of-bool/cmrc is another library with the same goal. The main difference is that currently, `cmcr` does not provide access to a single resource, instead files are globbed and accessed via a virtual filesystem. Files are opened per filename within the virtual filesystem. The advantage is that many files can be globbed at the same time and the implementation is 100% pure CMake, without any dependencies.
+
+https://github.com/MKlimenko/embed has a different approach, it builds a C++ CLI app and compiles it as part of your application, and then calls it to generate the files, doing the conversion in C++. `Battery-embed` also used this approach in the beginning, but this makes cross-compilation almost impossible, as the compiler might be for a different architecture and cannot run on the host, and having two different compilers in the same CMake project is just asking for trouble. 
 
 `Battery-embed` is designed to stay out of your way when developing, so it will allow cross-compilation just as well. It is not yet optimized for speed, however.
 
-Advantages over `MKlimenko/embed`:
+Possible advantages over the alternatives:
 
- - Much simpler design and easier to use
+ - Very simple design and easy to use
+ - Clean generated files and clean, object-based access to the resource's data
  - Only a single line of CMake per file
  - Resource files are nicely named and can be accessed by an identifier, not an index
  - Files can be nicely organized in folders, and the folder structure can even be preserved all the way down to the usage code
