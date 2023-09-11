@@ -50,6 +50,7 @@ What is NOT to be embedded:
 
  - Embed any file as a C++ byte array, compiled into the executable
  - Very lean API
+ - Compile-time checking of the file's existence
  - Conversion is fully automatic and performed whenever the file changes (No CMake reload needed)
  - Files are accessed using their path, not an index or alike
  - Implemented in a single CMake file, no dependencies
