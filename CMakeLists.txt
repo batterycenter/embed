@@ -135,6 +135,7 @@ inline std::ostream& operator<<(std::ostream& stream, const b::embed_internal::e
 
 #endif // BATTERY_EMBED_HPP
 ]=])
+file(WRITE ${EMBED_BINARY_DIR}/embed_header_file_template.hpp "${EMBED_HEADER_FILE}")
 
 # The cmake script to embed the files. This is called later on-demand, in a separate process
 set(EMBED_GENERATE_SCRIPT [=[
@@ -172,6 +173,7 @@ function(_embed_generate_hpp)
         list(GET EMBED_FILENAMES ${INDEX} FILENAME)
         set(EMBEDDED_FILES_RETURNS "${EMBEDDED_FILES_RETURNS}if constexpr (identifier == \"${FILENAME}\") { return embed_internal::${IDENTIFIER}; }\n        else ")
     endforeach()
+    file(READ ${EMBED_BINARY_DIR}/embed_header_file_template.hpp EMBED_HEADER_FILE)
     string(CONFIGURE "${EMBED_HEADER_FILE}" EMBED_HEADER_FILE_GENERATED)
     file(WRITE ${EMBED_HPP} "${EMBED_HEADER_FILE_GENERATED}")
 endfunction(_embed_generate_hpp)
