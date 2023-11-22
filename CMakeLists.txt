@@ -66,8 +66,8 @@ namespace b {
         std::function<void(const b::EmbedInternal::EmbeddedFile&)> callback;
     };
 
-    std::mutex embeddedFilesMapMutex;
-    std::unordered_map<std::string,FileData> embeddedFiles;
+    static std::mutex embeddedFilesMapMutex;
+    static std::unordered_map<std::string,FileData> embeddedFiles;
 
     std::wstring widen(const std::string& str) {
         std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
@@ -76,7 +76,7 @@ namespace b {
 
     // This is a global variable that is created at program start and automatically destroyed at program end
     // The jthread automatically stops when it is destroyed
-    std::jthread embeddedFileWatcherThread = std::jthread([&](std::stop_token stopToken) {
+    std::jthread embeddedFileWatcherThread = std::jthread([](std::stop_token stopToken) {
         while (!stopToken.stop_requested()) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
             std::lock_guard<std::mutex> lock(embeddedFilesMapMutex);
