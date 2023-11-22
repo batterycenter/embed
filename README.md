@@ -123,7 +123,7 @@ include(FetchContent)
 FetchContent_Declare(
   battery-embed
   GIT_REPOSITORY https://github.com/batterycenter/embed.git
-  GIT_TAG        v1.2.2
+  GIT_TAG        <latest-git-tag>
 )
 FetchContent_MakeAvailable(battery-embed)
 ```
@@ -131,7 +131,7 @@ FetchContent_MakeAvailable(battery-embed)
 Or, if you use `CPM.cmake`:
 
 ```cmake
-CPMAddPackage("gh:batterycenter/embed@v1.2.2")
+CPMAddPackage("gh:batterycenter/embed@<latest-git-tag>")
 ```
 
 Make sure to use the git tag of the latest release, but not 'main', to make sure your project stays reproducible for a long time and does not break by itself at some point.
@@ -169,7 +169,7 @@ include(FetchContent)
 FetchContent_Declare(
   battery-embed
   GIT_REPOSITORY https://github.com/batterycenter/embed.git
-  GIT_TAG        v1.2.2
+  GIT_TAG        <latest-git-tag>
 )
 FetchContent_MakeAvailable(battery-embed)
 
