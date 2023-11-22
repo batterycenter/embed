@@ -49,12 +49,11 @@ What is NOT to be embedded:
 ## Features
 
  - Embed any file as a C++ byte array, compiled into the executable
- - Very lean API
- - Compile-time checking of the file's existence
- - Conversion is fully automatic and performed whenever the file changes (No CMake reload needed)
- - Files are accessed using their path, not an index or alike
+ - The file is hot-reloaded at runtime if the source changed
+ - Compile-time checking of the file path
+ - Conversion is fully automatic (No CMake reload needed)
  - Implemented in a single CMake file, no dependencies
- - Cross-compilation compatible
+ - Suitable to be used with cross-compilation
 
 ## To be implemented
 
@@ -103,10 +102,10 @@ You might want to configure your Git client to always
 Building the examples:
 
 ```bash
-mkdir build
-cd build
-cmake ..
-cmake --build .
+git clone https://github.com/batterycenter/embed.git
+cd embed
+cmake . -B build
+cmake --build build
 ```
 
 Locate the built executable in the `build` directory (location depends on your compiler) and run it in a terminal.
@@ -124,7 +123,7 @@ include(FetchContent)
 FetchContent_Declare(
   battery-embed
   GIT_REPOSITORY https://github.com/batterycenter/embed.git
-  GIT_TAG        v1.0.0
+  GIT_TAG        v1.2.1
 )
 FetchContent_MakeAvailable(battery-embed)
 ```
@@ -132,7 +131,7 @@ FetchContent_MakeAvailable(battery-embed)
 Or, if you use `CPM.cmake`:
 
 ```cmake
-CPMAddPackage("gh:batterycenter/embed@v1.0.0")
+CPMAddPackage("gh:batterycenter/embed@v1.2.1")
 ```
 
 Make sure to use the git tag of the latest release, but not 'main', to make sure your project stays reproducible for a long time and does not break by itself at some point.
@@ -170,7 +169,7 @@ include(FetchContent)
 FetchContent_Declare(
   battery-embed
   GIT_REPOSITORY https://github.com/batterycenter/embed.git
-  GIT_TAG        v1.1.0
+  GIT_TAG        v1.2.1
 )
 FetchContent_MakeAvailable(battery-embed)
 
@@ -197,7 +196,12 @@ Hello World! This is a very long text!
 It even has multiple lines!
 ```
 
-That's it, just build and run it as usual!
+And build it:
+```bash
+cmake . -B build
+cmake --build build
+```
+That's it, now run it and see what happens!
 
 ### Type conversions
 
@@ -220,6 +224,38 @@ void foo_vec(const std::vector<uint8_t>& test);
 foo_str(b::embed<"resources/message.txt">());
 foo_vec(b::embed<"resources/message.txt">());
 ```
+
+### Hot-reloading files
+
+Files can be hot-reloaded at runtime, whenever they change. The `.get()` function can be used for this purpose, by providing a lambda function. In Debug mode (default), the lambda will be called once as soon as it is called, and from there on, it will always continue to be called from another thread, when the original file is modified. This is only supposed to be used for development.
+
+You can add `B_PRODUCTION_MODE` as a define. This comes from Battery and if you use this library outside of Battery, you must define it across the entire build system so that it applies to all source files.
+
+If `B_PRODUCTION_MODE` is defined across the entire build, all development features will be disabled. This means, no hot-reloading, no global file watcher thread, no absolute file paths compiled into the binary. The `.get()` function continues to work as usual, but the lambda will be called immediately from the same thread, and then it will not be called any more time. In production mode, it is basically a straight pipe.
+
+```cpp
+#include "battery/embed.hpp"
+#include <iostream>
+#include <thread>
+
+int main() {
+    std::string file;
+
+    // This lambda is called from another thread every time the file changes on-disk, 
+    // and in production mode, it is called immediately from the same thread, once.
+    b::embed<"assets/source.txt">().get([&file] (const auto& content) {
+        file = content.str();
+        std::cout << "File changed: " << file << std::endl;
+    });
+    
+    while (true) {
+        // Do something with file
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+}
+```
+
+Try running this code, and you will see that if you change the file, the lambda will automatically be called.
 
 ### C-Style functions
 
