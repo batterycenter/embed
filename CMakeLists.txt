@@ -86,7 +86,7 @@ namespace b {
                 if (newWriteTime != filedata.lastWriteTime) {
                     filedata.lastWriteTime = newWriteTime;
 #ifdef _WIN32
-                    std::ifstream file(widen(std::string(key)), std::ios::binary);
+                    std::ifstream file(embed_widen(std::string(key)), std::ios::binary);
 #else
                     std::ifstream file(key, std::ios::binary);
 #endif
