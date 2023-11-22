@@ -272,6 +272,9 @@ set(EMBED_FILENAMES "" CACHE INTERNAL "list of all filenames used by battery::em
 # Defer the function call until the end of the configure step
 cmake_language(DEFER DIRECTORY ${CMAKE_SOURCE_DIR} CALL _embed_generate_hpp())
 function(_embed_generate_hpp)
+    if (NOT EMBED_IDENTIFIERS)
+        return()
+    endif()
     set(EMBEDDED_FILES_DECLARATIONS "")
     list(LENGTH EMBED_IDENTIFIERS num_identifiers)
     foreach (IDENTIFIER IN LISTS EMBED_IDENTIFIERS)

@@ -97,6 +97,12 @@ even on Windows. For an explanation, consult http://utf8everywhere.org/.
 You might want to configure your Git client to always
 [checkout files with LF line endings](https://stackoverflow.com/questions/2517190/how-do-i-force-git-to-use-lf-instead-of-crlf-under-windows).
 
+## Binary Size
+
+Here is a small, quick test to see how much the executable size increases. It is not a serious benchmark, just a quick reference. I built a small hello world executable using iostream, which turned out to be `70kB` in Debug mode on Windows/MSVC. Then I embedded a `127kB` TTF file. The executable size jumped to `415kB`, which is a difference of `345kB`. That is about 2.7 times the size of the TTF file.
+
+Release mode showed an increase from `14kB` to `183kB`, which is a difference of only `169kB`. Comparing that to the original file size concludes that in Release mode on MSVC at least, the executable size only grows by about `30%` more than the file size being embedded.
+
 # Building the Examples
 
 Building the examples:
