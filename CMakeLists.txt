@@ -69,7 +69,7 @@ namespace b {
     static std::mutex embeddedFilesMapMutex;
     static std::unordered_map<std::string,FileData> embeddedFiles;
 
-    static std::wstring widen(const std::string& str) {
+    std::wstring embed_widen(const std::string& str) {
         std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
         return converter.from_bytes(str);
     }
