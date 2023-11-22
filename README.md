@@ -103,6 +103,10 @@ Here is a small, quick test to see how much the executable size increases. It is
 
 Release mode showed an increase from `14kB` to `183kB`, which is a difference of only `169kB`. Comparing that to the original file size concludes that in Release mode on MSVC at least, the executable size only grows by about `30%` more than the file size being embedded.
 
+The last test may be the most influential, it tests from one embedded file to another embedded file. With the same file embedded, the executable was `183kB` in Release mode. Adding another file with `108kB` brought the executable size to `290kB`, a difference of `107kB`. That is even less than the file size. The compiler seems to have optimized something.
+
+So as a conclusion, the mechanism is very efficient and gets more efficient the more files you add. The increase of the executable size compared to the filesize being embedded seems to be somewhere between `100%` - `150%` in MSVC Release mode.
+
 # Building the Examples
 
 Building the examples:
