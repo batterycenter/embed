@@ -69,9 +69,21 @@ namespace b {
     static std::mutex embeddedFilesMapMutex;
     static std::unordered_map<std::string,FileData> embeddedFiles;
 
-    std::wstring embed_widen(const std::string& str) {
+    static std::wstring embed_widen(const std::string& str) {
         std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
         return converter.from_bytes(str);
+    }
+
+    static std::optional<std::string> embed_read_file(const std::string_view& filename) {
+#ifdef _WIN32
+        std::ifstream file(embed_widen(std::string(filename)), std::ios::binary);
+#else
+        std::ifstream file(std::string(filename), std::ios::binary);
+#endif
+        if (file.fail()) {
+            return {};
+        }
+        return std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     }
 
     // This is a global variable that is created at program start and automatically destroyed at program end
@@ -85,15 +97,11 @@ namespace b {
                 auto newWriteTime = std::filesystem::last_write_time(filepath);
                 if (newWriteTime != filedata.lastWriteTime) {
                     filedata.lastWriteTime = newWriteTime;
-#ifdef _WIN32
-                    std::ifstream file(embed_widen(std::string(key)), std::ios::binary);
-#else
-                    std::ifstream file(key, std::ios::binary);
-#endif
-                    if (file.fail()) {
+                    auto fileresult = embed_read_file(key);
+                    if (!fileresult) {
                         continue;
                     }
-                    filedata.newContent = std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+                    filedata.newContent = *fileresult;
                     EmbedInternal::EmbeddedFile newFile(filedata.newContent, filedata.filename, filedata.filepath);
                     filedata.callback(newFile);
                 }
@@ -106,12 +114,20 @@ namespace b {
 #ifdef B_PRODUCTION_MODE
         callback(*this);
 #else
-        std::lock_guard<std::mutex> lock(embeddedFilesMapMutex);
+        auto fileresult = embed_read_file(m_fullFilepath);
+        if (fileresult) {
+            m_data = *fileresult;
+        }
+        callback(*this);
+
         FileData fileData;
         fileData.filename = m_filename;
         fileData.newContent = m_data;
         fileData.filepath = m_fullFilepath;
         fileData.callback = callback;
+        fileData.lastWriteTime = std::filesystem::last_write_time(m_fullFilepath);
+
+        std::lock_guard<std::mutex> lock(embeddedFilesMapMutex);
         embeddedFiles[std::string(m_fullFilepath)] = fileData;
 #endif
     }
