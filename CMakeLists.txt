@@ -111,8 +111,8 @@ namespace b {
         }
     });
 
-#endif !B_OS_WEB
-#endif !B_PRODUCTION_MODE
+#endif // !B_OS_WEB
+#endif // !B_PRODUCTION_MODE
 
     void EmbedInternal::EmbeddedFile::get(const std::function<void(const b::EmbedInternal::EmbeddedFile&)>& callback) {
 #if defined(B_PRODUCTION_MODE) || defined(B_OS_WEB)
