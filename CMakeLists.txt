@@ -31,7 +31,7 @@ namespace b {
         , "${FILENAME}" 
 #ifndef B_PRODUCTION_MODE
         , "${FULL_PATH}"
-#endif
+#endif // !B_PRODUCTION_MODE
     };
 
 } // namespace b
@@ -54,6 +54,7 @@ set(EMBED_MASTER_SOURCE_FILE [==[
 namespace b {
     
 #ifndef B_PRODUCTION_MODE
+#ifndef B_OS_WEB
 
     // All this crazyness is necessary because we need to use std::string_view because of constexpr,
     // and the string_view only points to a char array, so we need a string that outlives 
@@ -78,9 +79,9 @@ namespace b {
     static std::optional<std::string> embed_read_file(const std::string_view& filename) {
 #ifdef _WIN32
         std::ifstream file(embed_widen(std::string(filename)), std::ios::binary);
-#else
+#else // _WIN32
         std::ifstream file(std::string(filename), std::ios::binary);
-#endif
+#endif // _WIN32
         if (file.fail()) {
             return {};
         }
@@ -109,12 +110,14 @@ namespace b {
             }
         }
     });
-#endif
+
+#endif !B_OS_WEB
+#endif !B_PRODUCTION_MODE
 
     void EmbedInternal::EmbeddedFile::get(const std::function<void(const b::EmbedInternal::EmbeddedFile&)>& callback) {
-#ifdef B_PRODUCTION_MODE
+#if defined(B_PRODUCTION_MODE) || defined(B_OS_WEB)
         callback(*this);
-#else
+#else // B_PRODUCTION_MODE or B_OS_WEB
         auto fileresult = embed_read_file(m_fullFilepath);
         if (fileresult) {
             m_data = *fileresult;
@@ -130,7 +133,7 @@ namespace b {
 
         std::lock_guard<std::mutex> lock(embeddedFilesMapMutex);
         embeddedFiles[std::string(m_fullFilepath)] = fileData;
-#endif
+#endif // B_PRODUCTION_MODE or B_OS_WEB
     }
 
 } // namespace b
