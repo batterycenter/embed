@@ -375,9 +375,8 @@ function(b_embed TARGET FILENAME)
 
 endfunction()
 
-
 # Build all examples
-if (BUILD_EXAMPLES)
+if (PROJECT_IS_TOP_LEVEL AND BUILD_EXAMPLES)
     add_subdirectory(examples)      # Set Example 'simple' as the default project in Visual Studio
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT simple)
 endif()
