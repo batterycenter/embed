@@ -1,4 +1,5 @@
 add_subdirectory(binaryfile)
 add_subdirectory(filewatcher)
-add_subdirectory(simple)
 add_subdirectory(multifile)
+add_subdirectory(multitarget)
+add_subdirectory(simple)

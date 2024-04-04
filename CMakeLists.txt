@@ -7,7 +7,6 @@ option(BUILD_EXAMPLES "Build examples" ${PROJECT_IS_TOP_LEVEL})
 
 # Remember the binary dir for later
 set(EMBED_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/embed CACHE INTERNAL "binary directory of the battery::embed library" FORCE)
-set(EMBED_HPP "${EMBED_BINARY_DIR}/include/battery/embed.hpp" CACHE INTERNAL "path to the battery/embed.hpp header file" FORCE)
 
 # The template for how to generate the .cpp file
 set(EMBED_SOURCE_FILE_TEMPLATE [==[
@@ -271,28 +270,40 @@ file(WRITE ${EMBED_BINARY_DIR}/generate.cmake ${EMBED_GENERATE_SCRIPT})
 
 set(EMBED_IDENTIFIERS "" CACHE INTERNAL "list of all identifiers used by battery::embed")
 set(EMBED_FILENAMES "" CACHE INTERNAL "list of all filenames used by battery::embed")
+set(EMBED_TARGETS "" CACHE INTERNAL "list of all targets used by battery::embed")
 
 # Defer the function call until the end of the configure step
-cmake_language(DEFER DIRECTORY ${CMAKE_SOURCE_DIR} CALL _embed_generate_hpp())
-function(_embed_generate_hpp)
+cmake_language(DEFER DIRECTORY ${CMAKE_SOURCE_DIR} CALL _embed_generate_all_hpps())
+function(_embed_generate_all_hpps)
+    foreach (TARGET ${EMBED_TARGETS})
+        _embed_generate_hpp(${TARGET})
+    endforeach()
+endfunction(_embed_generate_all_hpps)
+
+function(_embed_generate_hpp TARGET)
     if (NOT EMBED_IDENTIFIERS)
         return()
     endif()
     set(EMBEDDED_FILES_DECLARATIONS "")
     list(LENGTH EMBED_IDENTIFIERS num_identifiers)
     foreach (IDENTIFIER IN LISTS EMBED_IDENTIFIERS)
-        set(EMBEDDED_FILES_DECLARATIONS "${EMBEDDED_FILES_DECLARATIONS}static EmbeddedFile ${IDENTIFIER};\n        ")
+        if (IDENTIFIER MATCHES "^${TARGET}")
+            set(EMBEDDED_FILES_DECLARATIONS "${EMBEDDED_FILES_DECLARATIONS}static EmbeddedFile ${IDENTIFIER};\n        ")
+        endif()
     endforeach()
     set(EMBEDDED_FILES_RETURNS "")
     math(EXPR num_identifiers "${num_identifiers} - 1")
     foreach (INDEX RANGE ${num_identifiers})
         list(GET EMBED_IDENTIFIERS ${INDEX} IDENTIFIER)
         list(GET EMBED_FILENAMES ${INDEX} FILENAME)
-        set(EMBEDDED_FILES_RETURNS "${EMBEDDED_FILES_RETURNS}if constexpr (identifier == \"${FILENAME}\") { return EmbedInternal::${IDENTIFIER}; }\n        else ")
+        if (IDENTIFIER MATCHES "^${TARGET}")
+            set(EMBEDDED_FILES_RETURNS "${EMBEDDED_FILES_RETURNS}if constexpr (identifier == \"${FILENAME}\") { return EmbedInternal::${IDENTIFIER}; }\n        else ")
+        endif()
     endforeach()
     file(READ ${EMBED_BINARY_DIR}/embed_header_file_template.hpp EMBED_HEADER_FILE)
     string(CONFIGURE "${EMBED_HEADER_FILE}" EMBED_HEADER_FILE_GENERATED)
-    file(WRITE ${EMBED_HPP} "${EMBED_HEADER_FILE_GENERATED}")
+    set(EMBED_HPP "${EMBED_BINARY_DIR}/include/${TARGET}/battery/embed.hpp")
+    file(WRITE "${EMBED_HPP}" "${EMBED_HEADER_FILE_GENERATED}")
 endfunction(_embed_generate_hpp)
 
 # Internal function for validating an identifier
@@ -312,11 +323,12 @@ function(b_embed TARGET FILENAME)
     # Make the identifier
     string(REGEX REPLACE "[^a-zA-Z0-9_]" "_" IDENTIFIER "${FILENAME}") # Replace all invalid characters with underscores
     string(TOLOWER "${IDENTIFIER}" IDENTIFIER) # Make the identifier all lowercase
+    set(IDENTIFIER "${TARGET}_${IDENTIFIER}")  # Add the target name to the front
     embed_validate_identifier("${IDENTIFIER}") # Validate the identifier against C variable naming rules
 
     # Set up paths
     get_filename_component(FULL_PATH "${FILENAME}" ABSOLUTE) # Make the file path absolute
-    set(GENERATED_FILES "${EMBED_BINARY_DIR}/autogen/${IDENTIFIER}.cpp" "${EMBED_HPP_FILE}")
+    set(GENERATED_FILES "${EMBED_BINARY_DIR}/autogen/${IDENTIFIER}.cpp")
 
     # If identifier already in use
     list(FIND EMBED_IDENTIFIERS ${IDENTIFIER} EMBED_USED_IDENTIFIERS_INDEX)
@@ -325,15 +337,10 @@ function(b_embed TARGET FILENAME)
     endif()
     set(EMBED_IDENTIFIERS ${EMBED_IDENTIFIERS} ${IDENTIFIER} CACHE INTERNAL "list of all identifiers used by the embed library")
     set(EMBED_FILENAMES ${EMBED_FILENAMES} ${FILENAME} CACHE INTERNAL "list of all filenames used by the embed library")
-
-    # In Visual Studio, add the resource file as a source file, and glob it in the folder structure
-    if (MSVC)
-        target_sources(${TARGET} PUBLIC ${FULL_PATH})
-        get_filename_component(PARENT_FOLDER "${FULL_PATH}" DIRECTORY)  # Get the resource file's parent directory
-        source_group(TREE "${PARENT_FOLDER}" PREFIX "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${FULL_PATH})
-    endif()
+    set(EMBED_TARGETS ${EMBED_TARGETS} ${TARGET} CACHE INTERNAL "list of all targets used by the embed library")
 
     # This action generates both files and is called on-demand whenever the resource file changes
+    set(EMBED_HPP "${EMBED_BINARY_DIR}/include/${TARGET}/battery/embed.hpp")
     add_custom_command(
             COMMAND ${CMAKE_COMMAND}
                     -DEMBED_HPP="${EMBED_HPP}"
@@ -354,9 +361,17 @@ function(b_embed TARGET FILENAME)
     )
 
     # Add the generated files to the target
-    target_include_directories(${TARGET} PUBLIC ${EMBED_BINARY_DIR}/include)
-    target_sources(${TARGET} PRIVATE ${GENERATED_FILES} ${EMBED_BINARY_DIR}/embed_impl.cpp)
-    source_group(TREE ${EMBED_BINARY_DIR}/autogen PREFIX "autogen" FILES ${GENERATED_FILES})
+    target_include_directories(${TARGET} PUBLIC ${EMBED_BINARY_DIR}/include/${TARGET})
+    target_sources(${TARGET} PRIVATE ${GENERATED_FILES} ${EMBED_BINARY_DIR}/embed_impl.cpp ${EMBED_HPP})
+
+    if (MSVC)
+        target_sources(${TARGET} PUBLIC ${FULL_PATH} ${EMBED_HPP})
+        get_filename_component(PARENT_FOLDER "${FULL_PATH}" DIRECTORY)  # Get the resource file's parent directory
+        source_group(TREE ${EMBED_BINARY_DIR}/autogen PREFIX "autogen" FILES ${GENERATED_FILES})
+        source_group(TREE ${EMBED_BINARY_DIR} PREFIX "autogen" FILES ${EMBED_BINARY_DIR}/embed_impl.cpp)
+        source_group(TREE ${EMBED_BINARY_DIR}/include/${TARGET}/battery PREFIX "autogen" FILES ${EMBED_HPP})
+        source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "/" FILES ${FULL_PATH})
+    endif()
 
 endfunction()
 

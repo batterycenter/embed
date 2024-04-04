@@ -59,7 +59,6 @@ What is NOT to be embedded:
 
  - In the future, file globbing might be implemented, so that a whole directory can be embedded 
 without specifying each file's name. This might be useful for embedded web servers, that might have hundreds of files.
- - Currently, each identifier can only be used once in the entire solution, even across multiple targets.
  - A function for writing a file or a whole directory to disk, to allow legacy APIs to load the file from disk. 
 Currently, every file would need to be retrieved and written to disk manually.
 
