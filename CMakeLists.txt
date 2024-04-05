@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-project(embed)
+project(embed LANGUAGES CXX)
 
 # Options
 option(BUILD_EXAMPLES "Build examples" ${PROJECT_IS_TOP_LEVEL})
