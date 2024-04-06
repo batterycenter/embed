@@ -3,7 +3,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 project(embed LANGUAGES CXX)
 
 # Options
-option(BUILD_EXAMPLES "Build examples" ${PROJECT_IS_TOP_LEVEL})
+option(BATTERY_EMBED_BUILD_EXAMPLES "Build examples" ${PROJECT_IS_TOP_LEVEL})
 
 # Remember the binary dir for later
 set(EMBED_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/embed CACHE INTERNAL "binary directory of the battery::embed library" FORCE)
@@ -377,7 +377,7 @@ function(b_embed TARGET FILENAME)
 endfunction()
 
 # Build all examples
-if (PROJECT_IS_TOP_LEVEL AND BUILD_EXAMPLES)
+if (BATTERY_EMBED_BUILD_EXAMPLES)
     add_subdirectory(examples)      # Set Example 'simple' as the default project in Visual Studio
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT simple)
 endif()
