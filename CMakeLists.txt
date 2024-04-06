@@ -87,10 +87,33 @@ namespace b {
         return std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     }
 
-    // This is a global variable that is created at program start and automatically destroyed at program end
-    // The jthread automatically stops when it is destroyed
-    std::jthread embeddedFileWatcherThread = std::jthread([](std::stop_token stopToken) {
-        while (!stopToken.stop_requested()) {
+    // Apple-Clang does not support std::jthread yet, hence we make our own version of jthread here:
+    class AutoThread {
+    public:
+        template<typename Tfunc>
+        AutoThread(Tfunc&& function)
+            : m_thread([&]() { function(m_shouldStop); }) 
+        {}
+        
+        ~AutoThread() {
+            m_shouldStop = true;
+            m_thread.join();
+        }
+
+        AutoThread(const AutoThread& other) = delete;
+        AutoThread(AutoThread&& other) = delete;
+        AutoThread& operator=(const AutoThread& other) = delete;
+        AutoThread& operator=(AutoThread&& other) = delete;
+
+    private:
+        std::thread m_thread;
+        std::atomic<bool> m_shouldStop = false;
+    };
+
+    // This is a global file watcher thread that is created at program start and automatically destroyed at program end
+    // All embedded files are hot-reloaded by this thread.
+    AutoThread embeddedFileWatcherThread = AutoThread([](std::atomic<bool>& shouldStop) {
+        while (!shouldStop) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
             std::lock_guard<std::mutex> lock(embeddedFilesMapMutex);
             for (auto& [key, filedata] : embeddedFiles) {
@@ -368,7 +391,7 @@ function(b_embed TARGET FILENAME)
     if (MSVC)
         target_sources(${TARGET} PUBLIC ${FULL_PATH} ${EMBED_HPP})
         get_filename_component(PARENT_FOLDER "${FULL_PATH}" DIRECTORY)  # Get the resource file's parent directory
-        source_group(TREE ${EMBED_BINARY_DIR}/autogen PREFIX "autogen" FILES ${GENERATED_FILES})
+        source_group(TREE ${EMBED_BINARY_DIR}/autogen/${TARGET}/src PREFIX "autogen" FILES ${CPP_FILE})
         source_group(TREE ${EMBED_BINARY_DIR} PREFIX "autogen" FILES ${EMBED_BINARY_DIR}/embed_impl.cpp)
         source_group(TREE ${EMBED_BINARY_DIR}/autogen/${TARGET}/include/battery PREFIX "autogen" FILES ${EMBED_HPP})
         source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "/" FILES ${FULL_PATH})
