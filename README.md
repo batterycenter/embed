@@ -314,3 +314,11 @@ Regarding the library itself, you are allowed to modify it and redistribute it a
 Since Version 1.1.0, this library is implemented in a single CMake file. You are allowed to re-upload this file
 as part of your own public repository, as long as the license header in the top is retained and any modifications
 are clearly marked.
+
+## Support 💪
+
+I do all of my projects in my free time and I do not get any money for that. I just like what I do, do it for myself and want to share it so that others can benefit too.
+
+I like beer and any support is greatly apprechiated :)
+
+<a href="https://www.buymeacoffee.com/herrnamenlos123"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a beer&emoji=🍺&slug=herrnamenlos123&button_colour=FFDD00&font_colour=000000&font_family=Lato&outline_colour=000000&coffee_colour=ffffff" /></a>
