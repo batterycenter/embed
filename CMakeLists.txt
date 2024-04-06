@@ -303,7 +303,7 @@ function(_embed_generate_hpp TARGET)
     endforeach()
     file(READ ${EMBED_BINARY_DIR}/embed_header_file_template.hpp EMBED_HEADER_FILE)
     string(CONFIGURE "${EMBED_HEADER_FILE}" EMBED_HEADER_FILE_GENERATED)
-    set(EMBED_HPP "${EMBED_BINARY_DIR}/include/${TARGET}/battery/embed.hpp")
+    set(EMBED_HPP "${EMBED_BINARY_DIR}/autogen/${TARGET}/include/battery/embed.hpp")
     file(WRITE "${EMBED_HPP}" "${EMBED_HEADER_FILE_GENERATED}")
 endfunction(_embed_generate_hpp)
 
@@ -329,7 +329,7 @@ function(b_embed TARGET FILENAME)
 
     # Set up paths
     get_filename_component(FULL_PATH "${FILENAME}" ABSOLUTE) # Make the file path absolute
-    set(GENERATED_FILES "${EMBED_BINARY_DIR}/autogen/${IDENTIFIER}.cpp")
+    set(CPP_FILE "${EMBED_BINARY_DIR}/autogen/${TARGET}/src/${IDENTIFIER}.cpp")
 
     # If identifier already in use
     list(FIND EMBED_IDENTIFIERS ${IDENTIFIER} EMBED_USED_IDENTIFIERS_INDEX)
@@ -341,13 +341,13 @@ function(b_embed TARGET FILENAME)
     set(EMBED_TARGETS ${EMBED_TARGETS} ${TARGET} CACHE INTERNAL "list of all targets used by the embed library")
 
     # This action generates both files and is called on-demand whenever the resource file changes
-    set(EMBED_HPP "${EMBED_BINARY_DIR}/include/${TARGET}/battery/embed.hpp")
+    set(EMBED_HPP "${EMBED_BINARY_DIR}/autogen/${TARGET}/include/battery/embed.hpp")
     add_custom_command(
             COMMAND ${CMAKE_COMMAND}
                     -DEMBED_HPP="${EMBED_HPP}"
                     -DINFILE="${EMBED_BINARY_DIR}/embed_source_file_template.cpp"
                     -DEMBED_ADDITIONAL_OPERATORS="${EMBED_ADDITIONAL_OPERATORS}"
-                    -DOUTFILE="${EMBED_BINARY_DIR}/autogen/${IDENTIFIER}.cpp"
+                    -DOUTFILE="${CPP_FILE}"
                     -DEMBED_BINARY_DIR="${EMBED_BINARY_DIR}"
                     -DIDENTIFIER="${IDENTIFIER}"
                     -DFULL_PATH="${FULL_PATH}"
@@ -358,19 +358,19 @@ function(b_embed TARGET FILENAME)
                     "${EMBED_HPP}"
                     "${EMBED_BINARY_DIR}/generate.cmake"
                     "${EMBED_BINARY_DIR}/embed_source_file_template.cpp"
-            OUTPUT ${GENERATED_FILES}
+            OUTPUT ${CPP_FILE}
     )
 
     # Add the generated files to the target
-    target_include_directories(${TARGET} PUBLIC ${EMBED_BINARY_DIR}/include/${TARGET})
-    target_sources(${TARGET} PRIVATE ${GENERATED_FILES} ${EMBED_BINARY_DIR}/embed_impl.cpp ${EMBED_HPP})
+    target_include_directories(${TARGET} PUBLIC ${EMBED_BINARY_DIR}/autogen/${TARGET}/include)
+    target_sources(${TARGET} PRIVATE ${CPP_FILE} ${EMBED_BINARY_DIR}/embed_impl.cpp ${EMBED_HPP})
 
     if (MSVC)
         target_sources(${TARGET} PUBLIC ${FULL_PATH} ${EMBED_HPP})
         get_filename_component(PARENT_FOLDER "${FULL_PATH}" DIRECTORY)  # Get the resource file's parent directory
         source_group(TREE ${EMBED_BINARY_DIR}/autogen PREFIX "autogen" FILES ${GENERATED_FILES})
         source_group(TREE ${EMBED_BINARY_DIR} PREFIX "autogen" FILES ${EMBED_BINARY_DIR}/embed_impl.cpp)
-        source_group(TREE ${EMBED_BINARY_DIR}/include/${TARGET}/battery PREFIX "autogen" FILES ${EMBED_HPP})
+        source_group(TREE ${EMBED_BINARY_DIR}/autogen/${TARGET}/include/battery PREFIX "autogen" FILES ${EMBED_HPP})
         source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "/" FILES ${FULL_PATH})
     endif()
 
