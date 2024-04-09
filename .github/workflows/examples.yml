@@ -45,7 +45,7 @@ jobs:
         run: cmake -G "MinGW Makefiles" . -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DB_PRODUCTION_MODE=${{matrix.production_mode}}
 
       - name: Build and run all examples
-        run: cmake -G "MinGW Makefiles" --build ${{github.workspace}}/build --config ${{matrix.build_type}} --target run_all_examples
+        run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --target run_all_examples
 
   build-linux:
     runs-on: ubuntu-latest
