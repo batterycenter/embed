@@ -377,12 +377,11 @@ function(b_embed TARGET FILENAME)
             COMMAND ${CMAKE_COMMAND}
                     -DEMBED_HPP="${EMBED_HPP}"
                     -DINFILE="${EMBED_BINARY_DIR}/embed_source_file_template.cpp"
-                    -DEMBED_ADDITIONAL_OPERATORS="${EMBED_ADDITIONAL_OPERATORS}"
                     -DOUTFILE="${CPP_FILE}"
                     -DEMBED_BINARY_DIR="${EMBED_BINARY_DIR}"
-                    -DIDENTIFIER="${IDENTIFIER}"
-                    -DFULL_PATH="${FULL_PATH}"
-                    -DFILENAME="${FILENAME}"
+                    -DIDENTIFIER="\"${IDENTIFIER}\""
+                    -DFULL_PATH="\"${FULL_PATH}\""
+                    -DFILENAME="\"${FILENAME}\""
                     -DFILESIZE=${FILESIZE}
                     -P "${EMBED_BINARY_DIR}/generate.cmake"
             DEPENDS "${FULL_PATH}"
