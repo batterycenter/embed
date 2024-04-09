@@ -1,0 +1,1 @@
+This is a simple example, where the b_embed() function is called in a CMake subdirectory.
