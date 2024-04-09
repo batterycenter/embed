@@ -5,6 +5,7 @@ project(embed LANGUAGES CXX)
 # Options
 option(B_EMBED_BUILD_EXAMPLES "Build battery::embed examples" ${PROJECT_IS_TOP_LEVEL})
 option(B_PRODUCTION_MODE "Enable production mode and disable development tools such as hotreload" OFF)
+option(B_EMBED_SILENCE_DEVMODE_WARNING "Disable the battery::embed devmode warning" OFF)
 
 # Remember the binary dir for later
 set(EMBED_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/embed CACHE INTERNAL "binary directory of the battery::embed library" FORCE)
@@ -427,3 +428,7 @@ endif()
 if (PROJECT_IS_TOP_LEVEL)
     set(PREDEFINED_TARGETS_FOLDER "CMakePredefinedTargets")
 endif()
+
+if (NOT B_EMBED_SILENCE_DEVMODE_WARNING AND NOT B_PRODUCTION_MODE)
+    message(WARNING "Battery::Embed is in development mode, enabling hotreload. Before deploying your application, use -DB_PRODUCTION_MODE=ON to strip all development features such as hotreload and absolute filepaths.")
+endif ()
