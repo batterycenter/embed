@@ -382,11 +382,17 @@ function(b_embed TARGET FILENAME)
     # This action generates both files and is called on-demand whenever the resource file changes
     set(EMBED_HPP "${EMBED_BINARY_DIR}/autogen/${TARGET_ID}/include/battery/embed.hpp")
     set(EMBED_CPP_TEMPLATE "${EMBED_BINARY_DIR}/embed_source_file_template.cpp")
-    set(COMMAND_ARGS "-DINFILE=\"${EMBED_CPP_TEMPLATE}\" -DFILENAME=\"${FILENAME}\" -DIDENTIFIER=\"${IDENTIFIER}\" -DOUTFILE=\"${CPP_FILE}\" -DFULL_PATH=\"${FULL_PATH}\" -P \"${EMBED_BINARY_DIR}/generate.cmake\"")
     add_custom_command(
-            COMMAND ${CMAKE_COMMAND} ${COMMAND_ARGS}
+            COMMAND ${CMAKE_COMMAND}
+                -DINFILE=${EMBED_CPP_TEMPLATE}
+                -DOUTFILE=${CPP_FILE}
+                -DFULL_PATH=${FULL_PATH}
+                -DIDENTIFIER=${IDENTIFIER}
+                -DFILENAME=${FILENAME}
+                -P "${EMBED_BINARY_DIR}/generate.cmake"
             DEPENDS "${FULL_PATH}" "${EMBED_HPP}" "${EMBED_BINARY_DIR}/generate.cmake" "${EMBED_BINARY_DIR}/embed_source_file_template.cpp"
             OUTPUT ${CPP_FILE}
+            VERBATIM
     )
 
     # Add the generated files to the target
