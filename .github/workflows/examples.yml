@@ -7,13 +7,11 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
+  build-windows:
+    runs-on: windows-latest
 
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
-        compiler: [msvc, mingw, gcc, clang]
         build_type: [Debug, Release]
         production_mode: [ON, OFF]
 
@@ -21,7 +19,43 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Configure CMake
-      run: cmake . -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}}
+      run: cmake . -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DB_PRODUCTION_MODE=${{matrix.production_mode}}
 
     - name: Build and run all examples
-      run: cmake --build build --config ${{matrix.build_type}} --target run_all_examples
+      run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --target run_all_examples
+
+  build-linux:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        cxx_compiler: [g++, clang++]
+        build_type: [Debug, Release]
+        production_mode: [ON, OFF]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure CMake
+        run: cmake . -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DB_PRODUCTION_MODE=${{matrix.production_mode}} -DCMAKE_CXX_COMPILER=${{matrix.cxx_compiler}}
+
+      - name: Build and run all examples
+        run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --target run_all_examples
+
+  build-mac:
+    runs-on: macos-latest
+
+    strategy:
+      matrix:
+        cxx_compiler: [g++, clang++, apple-clang++]
+        build_type: [Debug, Release]
+        production_mode: [ON, OFF]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure CMake
+        run: cmake . -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DB_PRODUCTION_MODE=${{matrix.production_mode}} -DCMAKE_CXX_COMPILER=${{matrix.cxx_compiler}}
+
+      - name: Build and run all examples
+        run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --target run_all_examples
