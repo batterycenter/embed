@@ -3,6 +3,8 @@
 #include <iostream>
 #include <thread>
 
+namespace chr = std::chrono;
+
 int main() {
     std::string file;
 
@@ -12,10 +14,11 @@ int main() {
         file = content.str();
         std::cout << "File changed: " << file << std::endl;
     });
-    
-    while (true) {
+
+    auto start = chr::high_resolution_clock::now();
+    while (chr::duration_cast<chr::seconds>(chr::high_resolution_clock::now() - start).count() < 10) {
         // Do something with file
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(chr::seconds(1));
     }
     return 0;
 }
