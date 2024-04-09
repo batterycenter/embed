@@ -70,10 +70,12 @@ namespace b {
     static std::mutex embeddedFilesMapMutex;
     static std::unordered_map<std::string,FileData> embeddedFiles;
 
+#ifdef _WIN32
     static std::wstring embed_widen(const std::string& str) {
         std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
         return converter.from_bytes(str);
     }
+#endif // _WIN32
 
     static std::optional<std::string> embed_read_file(const std::string_view& filename) {
 #ifdef _WIN32
