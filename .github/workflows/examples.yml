@@ -24,6 +24,29 @@ jobs:
     - name: Build and run all examples
       run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --target run_all_examples
 
+  build-windows-mingw:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        build_type: [Debug, Release]
+        production_mode: [ON, OFF]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up MinGW
+        uses: egor-tensin/setup-mingw@v2
+        with:
+          platform: x64
+          static: 0
+
+      - name: Configure CMake
+        run: cmake -G "MinGW Makefiles" . -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DB_PRODUCTION_MODE=${{matrix.production_mode}}
+
+      - name: Build and run all examples
+        run: cmake -G "MinGW Makefiles" --build ${{github.workspace}}/build --config ${{matrix.build_type}} --target run_all_examples
+
   build-linux:
     runs-on: ubuntu-latest
 
