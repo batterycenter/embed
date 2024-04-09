@@ -393,8 +393,10 @@ function(b_embed TARGET FILENAME)
     )
 
     # Add the generated files to the target
+    find_package(Threads REQUIRED)
     target_include_directories(${TARGET} PUBLIC ${EMBED_BINARY_DIR}/autogen/${TARGET_ID}/include)
     target_sources(${TARGET} PRIVATE ${CPP_FILE} ${EMBED_BINARY_DIR}/embed_impl.cpp ${EMBED_HPP})
+    target_link_libraries(${TARGET} PRIVATE Threads::Threads)
 
     if (MSVC)
         target_sources(${TARGET} PRIVATE ${FULL_PATH})
