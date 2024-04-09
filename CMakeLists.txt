@@ -49,6 +49,7 @@ set(EMBED_MASTER_SOURCE_FILE [==[
 #include <fstream>
 #include <mutex>
 #include <optional>
+#include <unordered_map>
 
 namespace b {
     
