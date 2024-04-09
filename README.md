@@ -293,6 +293,41 @@ If there is strictly no other way than loading from the filesystem, you can stil
 disk when needed, let the legacy API load it, and then delete it again, if you want to keep your application 
 portable and want to avoid shipping resource files.
 
+### Embedding files from a subdirectory
+
+Say you want to achieve following structure:
+```
+ - CMakeLists.txt       -> 'add_executable(MyTarget)' and 'add_subdirectory(resources)'
+ - resources
+   - CMakeLists.txt     -> Here, calling 'b_embed(MyTarget ...)'
+   - resource1.txt
+   - resource2.txt
+   - ...
+```
+
+This structure unfortunately cannot be achieved easily, due to CMake's encapsulation rules.
+Any generated resource in CMake must be defined in the same directory as the target it is applied to (also applies to `b_embed()`).
+Hence, you must always keep `b_embed()` in the same CMake file where the target is created.
+
+Therefore, the idiomatic way to achieve said goal is to create a static proxy library in the subdirectory, call
+`b_embed()` on the proxy library, and then link your executable to the proxy library. The convenience function `b_embed_proxy_target()` can be used for this task. 
+
+#### Example
+resources/CMakeLists.txt:  
+```cmake
+b_embed_proxy_target(MyTarget MyTarget-resources)
+b_embed(MyTarget-resources resource1.txt)
+b_embed(MyTarget-resources resource2.txt)
+...
+```
+CMakeLists.txt:
+```cmake
+add_executable(MyTarget)
+target_compile_features(MyTarget PUBLIC cxx_std_20)
+
+add_subdirectory(resources)
+```
+
 # Contribution
 
 This library is open for contributions. Feel free to open an issue or a pull request, I am very happy about feedback 

@@ -397,19 +397,20 @@ function(b_embed TARGET FILENAME)
     target_sources(${TARGET} PRIVATE ${CPP_FILE} ${EMBED_BINARY_DIR}/embed_impl.cpp ${EMBED_HPP})
 
     if (MSVC)
-        target_sources(${TARGET} PUBLIC ${FULL_PATH} ${EMBED_HPP})
-        get_filename_component(PARENT_FOLDER "${FULL_PATH}" DIRECTORY)  # Get the resource file's parent directory
-        source_group(TREE ${EMBED_BINARY_DIR}/autogen/${TARGET_ID}/src PREFIX "autogen" FILES ${CPP_FILE})
-        source_group(TREE ${EMBED_BINARY_DIR} PREFIX "autogen" FILES ${EMBED_BINARY_DIR}/embed_impl.cpp)
-        source_group(TREE ${EMBED_BINARY_DIR}/autogen/${TARGET_ID}/include/battery PREFIX "autogen" FILES ${EMBED_HPP})
-        source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "/" FILES ${FULL_PATH})
+        target_sources(${TARGET} PRIVATE ${FULL_PATH})
+        source_group(TREE ${EMBED_BINARY_DIR}/autogen/${TARGET_ID}/src PREFIX "embed/autogen" FILES ${CPP_FILE})
+        source_group(TREE ${EMBED_BINARY_DIR} PREFIX "embed/autogen" FILES ${EMBED_BINARY_DIR}/embed_impl.cpp)
+        source_group(TREE ${EMBED_BINARY_DIR}/autogen/${TARGET_ID}/include/battery PREFIX "embed/autogen" FILES ${EMBED_HPP})
+        source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "/embed" FILES ${FULL_PATH})
     endif()
 
 endfunction()
 
-function(b_embed_proxy_target TARGET)
-    add_library(${TARGET} STATIC)
-    target_compile_features(${TARGET} PUBLIC cxx_std_20)
+function(b_embed_proxy_target MAIN_TARGET PROXY_TARGET)
+    add_library(${PROXY_TARGET} STATIC)
+    target_compile_features(${PROXY_TARGET} PUBLIC cxx_std_20)
+    target_link_libraries(${MAIN_TARGET} PRIVATE ${PROXY_TARGET})
+    set_target_properties(${PROXY_TARGET} PROPERTIES FOLDER "embed-proxy-targets")
 endfunction()
 
 # Build all examples
