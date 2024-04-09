@@ -47,12 +47,17 @@ jobs:
 
     strategy:
       matrix:
-        cxx_compiler: [g++, clang++, apple-clang++]
+        cxx_compiler: [g++, clang++]
         build_type: [Debug, Release]
         production_mode: [ON, OFF]
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: Set up Xcode and AppleClang
+        uses: actions/setup-xcode@v2
+        with:
+          xcode-version: '13.2'  # Use the version of Xcode you prefer
 
       - name: Configure CMake
         run: cmake . -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DB_PRODUCTION_MODE=${{matrix.production_mode}} -DCMAKE_CXX_COMPILER=${{matrix.cxx_compiler}}

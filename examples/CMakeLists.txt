@@ -1,3 +1,14 @@
+
+function(add_example TARGET)
+    add_executable(${TARGET} src/main.cpp)
+    target_compile_features(${TARGET} PRIVATE cxx_std_20)
+    source_group("src" FILES src/main.cpp)
+    target_compile_options(${TARGET} PRIVATE
+            $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic -Werror>
+    )
+endfunction()
+
 add_subdirectory(binaryfile)
 add_subdirectory(filewatcher)
 add_subdirectory(multifile)
