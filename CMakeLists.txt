@@ -179,6 +179,7 @@ set(EMBED_HEADER_FILE [=[
 #include <sstream>
 #include <functional>
 #include <cstdint>
+#include <algorithm>
 
 #ifndef __cpp_constexpr_dynamic_alloc
 #   error "battery::embed requires C++20 (Your compiler does not provide __cpp_constexpr_dynamic_alloc, which is needed for battery::embed)"
