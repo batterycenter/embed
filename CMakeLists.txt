@@ -132,16 +132,19 @@ namespace b {
             std::lock_guard<std::mutex> lock(embeddedFilesMapMutex);
             for (auto& [key, filedata] : embeddedFiles) {
                 std::filesystem::path filepath(key);
-                auto newWriteTime = std::filesystem::last_write_time(filepath);
-                if (newWriteTime != filedata.lastWriteTime) {
-                    filedata.lastWriteTime = newWriteTime;
-                    auto fileresult = embed_read_file(key);
-                    if (!fileresult) {
-                        continue;
+                std::error_code ec;
+                auto newWriteTime = std::filesystem::last_write_time(filepath, ec);
+                if (!ec) {
+                    if (newWriteTime != filedata.lastWriteTime) {
+                        filedata.lastWriteTime = newWriteTime;
+                        auto fileresult = embed_read_file(key);
+                        if (!fileresult) {
+                            continue;
+                        }
+                        filedata.newContent = *fileresult;
+                        EmbedInternal::EmbeddedFile newFile(filedata.newContent, filedata.filename, filedata.filepath);
+                        filedata.callback(newFile);
                     }
-                    filedata.newContent = *fileresult;
-                    EmbedInternal::EmbeddedFile newFile(filedata.newContent, filedata.filename, filedata.filepath);
-                    filedata.callback(newFile);
                 }
             }
         }
