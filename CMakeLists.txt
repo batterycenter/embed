@@ -83,11 +83,11 @@ namespace b {
         return converter.from_bytes(str);
     }
     
-#endif // _WIN32
-
 #ifdef __clang__
 #pragma GCC diagnostic pop
 #endif
+
+#endif // _WIN32
 
     static std::optional<std::string> embed_read_file(const std::string_view& filename) {
 #ifdef _WIN32
