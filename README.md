@@ -163,9 +163,14 @@ add_subdirectory(external/embed)
 Since Version 1.1.0, the library is implemented in a single CMake file and the Python dependency was dropped. 
 Now, you can simply copy the CMakeLists.txt into a subdirectory of your project, add it and start using the library.
 
-### 4. Conan (not planned yet)
+### 4. Conan
 
-This library does not have Conan support yet. Let me know if there is interest to add this library to Conan!
+Thanks to @toge, battery-embed is now available as part of the Conan Package Manager!🎉
+
+It can be found at  
+https://conan.io/center/recipes/battery-embed
+
+To use, simply add `battery-embed/<version>` to your Conan dependencies, and in CMake, call `b_embed()`. That's it!
 
 ## Full Example
 
