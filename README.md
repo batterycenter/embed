@@ -170,7 +170,7 @@ Thanks to @toge, battery-embed is now available as part of the Conan Package Man
 It can be found at  
 https://conan.io/center/recipes/battery-embed
 
-To use, simply add `battery-embed/<version>` to your Conan dependencies, and in CMake, call `b_embed()`. That's it!
+To use, simply add `battery-embed/<version>` to your Conan dependencies, and in CMake, after `find_package(battery-embed REQUIRED CONFIG)`, call `b_embed()`. That's it!
 
 ## Full Example
 
