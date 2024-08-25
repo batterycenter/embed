@@ -410,7 +410,10 @@ function(b_embed TARGET FILENAME)
     )
 
     # Add the generated files to the target
-    target_include_directories(${TARGET} PUBLIC ${EMBED_BINARY_DIR}/autogen/${TARGET_ID}/include)
+    target_include_directories(${TARGET} PUBLIC 
+        $<BUILD_INTERFACE:${EMBED_BINARY_DIR}/autogen/${TARGET_ID}/include>
+        $<INSTALL_INTERFACE:>
+    )
     target_sources(${TARGET} PRIVATE ${CPP_FILE} ${EMBED_BINARY_DIR}/embed_impl.cpp ${EMBED_HPP})
     target_compile_definitions(${TARGET} PRIVATE _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING)
 
