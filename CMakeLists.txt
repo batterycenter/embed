@@ -368,6 +368,11 @@ endfunction()
 
 # The main function for embedding files
 function(b_embed TARGET FILENAME)
+    set(options)
+    set(oneValueArgs)
+    set(multiValueArgs DEPENDENCIES)
+    cmake_parse_arguments(PARSE_ARGV 1 "ARG" "${options}" "${oneValueArgs}" "${multiValueArgs}")
+
     string(TOLOWER "${TARGET}" TARGET_ID)
     string(REGEX REPLACE "[^a-zA-Z0-9_]" "_" TARGET_ID "${TARGET_ID}")
 
@@ -404,7 +409,7 @@ function(b_embed TARGET FILENAME)
                 -DIDENTIFIER=${IDENTIFIER}
                 -DFILENAME=${FILENAME}
                 -P "${EMBED_BINARY_DIR}/generate.cmake"
-            DEPENDS "${FULL_PATH}" "${EMBED_HPP}" "${EMBED_BINARY_DIR}/generate.cmake" "${EMBED_BINARY_DIR}/embed_source_file_template.cpp"
+            DEPENDS "${FULL_PATH}" "${EMBED_HPP}" "${EMBED_BINARY_DIR}/generate.cmake" "${EMBED_BINARY_DIR}/embed_source_file_template.cpp" ${ARG_DEPENDENCIES}
             OUTPUT ${CPP_FILE}
             VERBATIM
     )
