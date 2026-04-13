@@ -5,7 +5,7 @@ Embedding files into executables made easy. Single CMake file, Modern C++, a min
 
 ## What is this?
 
-This is a CMake-based C++20 library that allows you to very easily embed resource files 
+This is a CMake-based C++17 library that allows you to very easily embed resource files 
 into your executable. It is meant to be used for files such as icons, images, shader code, 
 configuration files, etc.. You don't have to worry about distributing them with your application 
 as the files are part of the application once compiled. It might also be an advantage that an end 
@@ -65,9 +65,9 @@ Currently, every file would need to be retrieved and written to disk manually.
 ## Requirements
 
  - CMake >=3.21
- - A C++20 compiler
+ - A C++17 compiler
 
-This project requires C++20. If you are stuck with an older version, you can use [Release v1.0.0](https://github.com/batterycenter/embed/releases/tag/v1.0.0). It was made for C++14.
+This project requires C++17. If you are stuck with an older version, you can use [Release v1.0.0](https://github.com/batterycenter/embed/releases/tag/v1.0.0). It was made for C++14.
 
 ## How it works
 
@@ -199,7 +199,9 @@ src/main.cpp
 #include "battery/embed.hpp"
 
 int main() {
-    std::cout << b::embed<"resources/message.txt">() << std::endl;
+    for (auto filename : b::embed_list()) {
+        std::cout << "Embedded file: " << filename << "[" << b::embed(filename).size() << "]" << std::endl;
+    }
     return 0;
 }
 ```
@@ -222,11 +224,11 @@ That's it, now run it and see what happens!
 The returned object is a class that provides a number of functions and conversion operators for convenience.
 
 ```cpp
-std::string file =            b::embed<"resources/message.txt">().str();
-const char* pointer =         b::embed<"resources/message.txt">().data();
-size_t length =               b::embed<"resources/message.txt">().length();
-size_t size =                 b::embed<"resources/message.txt">().size();
-std::vector<uint8_t> vec =    b::embed<"resources/message.txt">().vec();
+std::string file =            b::embed("resources/message.txt").str();
+const char* pointer =         b::embed("resources/message.txt").data();
+size_t length =               b::embed("resources/message.txt").length();
+size_t size =                 b::embed("resources/message.txt").size();
+std::vector<uint8_t> vec =    b::embed("resources/message.txt").vec();
 ```
 
 And all conversions also exist as operators, allowing for this:
@@ -235,8 +237,8 @@ And all conversions also exist as operators, allowing for this:
 void foo_str(const std::string& test);
 void foo_vec(const std::vector<uint8_t>& test);
 
-foo_str(b::embed<"resources/message.txt">());
-foo_vec(b::embed<"resources/message.txt">());
+foo_str(b::embed("resources/message.txt"));
+foo_vec(b::embed("resources/message.txt"));
 ```
 
 ### Hot-reloading files
@@ -257,7 +259,7 @@ int main() {
 
     // This lambda is called from another thread every time the file changes on-disk, 
     // and in production mode, it is called immediately from the same thread, once.
-    b::embed<"assets/source.txt">().get([&file] (const auto& content) {
+    b::embed("assets/source.txt").get([&file] (const auto& content) {
         file = content.str();
         std::cout << "File changed: " << file << std::endl;
     });
@@ -285,7 +287,7 @@ void test() {
     }
 
     // Or pass it along
-    auto icon = b::embed<"resources/message.txt">();
+    auto icon = b::embed("resources/message.txt);
     old_c_style_function(icon.data(), icon.size());
 }
 ```
@@ -328,7 +330,7 @@ b_embed(MyTarget-resources resource2.txt)
 CMakeLists.txt:
 ```cmake
 add_executable(MyTarget)
-target_compile_features(MyTarget PUBLIC cxx_std_20)
+target_compile_features(MyTarget PUBLIC cxx_std_17)
 
 add_subdirectory(resources)
 ```
